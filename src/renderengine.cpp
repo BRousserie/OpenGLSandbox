@@ -72,6 +72,9 @@ void render(const RenderEngine& engine, const RenderParams& params) {
     glClearColor(params.backgroundColor.r, params.backgroundColor.g, params.backgroundColor.b, params.backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glPointSize(params.pointSize);
+    glLineWidth(params.lineWidth);
+
     // save previous gl state
     GLboolean bEnableBlend;
     glGetBooleanv(GL_BLEND, &bEnableBlend);

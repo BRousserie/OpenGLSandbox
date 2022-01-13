@@ -306,6 +306,9 @@ int main(int argc, char** argv) {
     renderParams.backgroundColor.b = 0.f;
     renderParams.backgroundColor.a = 1.f;
 
+    renderParams.pointSize = 1.f;
+    renderParams.lineWidth = 1.f;
+
     if (checkOpenGlError()) {
         ERROR("OpenGL Error before launching main loop");
     }
@@ -397,6 +400,9 @@ int main(int argc, char** argv) {
             ImGui::Begin("3D Sandbox");
 
             ImGui::ColorEdit4("Background color", (float*)&renderParams.backgroundColor, ImGuiColorEditFlags_NoInputs);
+            ImGui::SliderFloat("Point size", &renderParams.pointSize, 0.1f, 10.f);
+            ImGui::SliderFloat("Line Width", &renderParams.lineWidth, 0.1f, 10.f);
+
             float fovDegrees = glm::degrees(camera.fov);
             if (ImGui::SliderFloat("Camera field of fiew (degrees)", &fovDegrees, 15, 180)) {
                 camera.fov = glm::radians(fovDegrees);

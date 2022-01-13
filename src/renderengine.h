@@ -57,6 +57,9 @@ struct RenderParams {
 	GLint viewportWidth;
 	GLint viewportHeight;
 
+	float pointSize;
+	float lineWidth;
+
 	glm::vec4 backgroundColor;
 };
 

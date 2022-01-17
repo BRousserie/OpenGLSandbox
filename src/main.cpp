@@ -242,7 +242,8 @@ int main(int argc, char** argv) {
     int width = 1024, height = 768;
     float widthf = (float)width;
     float heightf = (float)height;
-    double t;
+    double t = glfwGetTime();
+    double deltatime = 0.0;
     double fps = 0.0;
 
     char const* projectName = argv[0];
@@ -336,7 +337,10 @@ int main(int argc, char** argv) {
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window) && (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)) {
-        t = glfwGetTime();
+        double newTime = glfwGetTime();
+        deltatime = newTime - t;
+        fps = 1.0 / deltatime;
+        t = newTime;
 
         // Poll for and process events
         glfwPollEvents();
@@ -456,9 +460,6 @@ int main(int argc, char** argv) {
         if (checkOpenGlError()) {
             assert(false);
         }
-
-        double newTime = glfwGetTime();
-        fps = 1.0 / (newTime - t);
 
         sprintf(windowName, "%s - %.0f fps", projectName, fps);
         glfwSetWindowTitle(window, windowName);

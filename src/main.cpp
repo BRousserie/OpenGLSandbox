@@ -163,17 +163,17 @@ namespace {
         DrawBuffer2D square;
     };
 
-    void createRender2DUserData(Render2DUserData& userData) {
+    void createRender2DUserData(Render2DUserData& userData, const glm::vec2 pos = { 0.0, 0.0 }) {
         const float s = 0.5;
         glm::vec2 square_vertices[] = {
-            {-s, -s},
-            {+s, -s},
-            {+s, -s},
-            {+s, +s},
-            {+s, +s},
-            {-s, +s},
-            {-s, +s},
-            {-s, -s},
+            {-s + pos.x, -s + pos.y},
+            {+s + pos.x, -s + pos.y},
+            {+s + pos.x, -s + pos.y},
+            {+s + pos.x, +s + pos.y},
+            {+s + pos.x, +s + pos.y},
+            {-s + pos.x, +s + pos.y},
+            {-s + pos.x, +s + pos.y},
+            {-s + pos.x, -s + pos.y},
         };
         glm::vec4 square_colors[COUNTOF(square_vertices)];
         for (int iColor = 0; iColor < COUNTOF(square_colors); ++iColor) {

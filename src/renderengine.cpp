@@ -34,6 +34,7 @@ void drawBuffer3D(eDrawMode drawMode, const Api3D& api, const RenderParams& para
     glProgramUniform3fv(shader3D.programId, shader3D.lightLocation, 1, glm::value_ptr(glm::vec3(light) / light.w));
     glProgramUniform1f(shader3D.programId, shader3D.ambientLocation, ambient);
 
+		assert(buffer.vao); // did you call createDrawBuffer3D ?
     glBindVertexArray(buffer.vao);
     glDrawArrays((GLenum)drawMode, 0, buffer.vertexCount);
     glBindVertexArray(0);
@@ -50,6 +51,8 @@ void drawBuffer2D(eDrawMode drawMode, const Api2D& api, const DrawBuffer2D& buff
     const ShaderProgram2D& shader2D = api.shader2D;
 
     glUseProgram(shader2D.programId);
+
+		assert(buffer.vao); // did you call createDrawBuffer2D ?
     glBindVertexArray(buffer.vao);
     glDrawArrays((GLenum)drawMode, 0, buffer.vertexCount);
     glBindVertexArray(0);
@@ -103,7 +106,7 @@ void render(const RenderEngine& engine, const RenderParams& params) {
 
     glDisable(GL_DEPTH_TEST);
     params.Render2DCallback(engine.api2D, params, params.pRender2DCallbackUserData);
-    
+
     // restore gl state
     if (bEnableBlend) {
         glEnable(GL_BLEND);

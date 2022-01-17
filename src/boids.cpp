@@ -11,6 +11,11 @@ boids::boids(float _AttractForce, float _AttractRadius, float _RepulseForce, flo
 {
 }
 
+boids::~boids()
+{
+
+}
+
 std::vector<boids::boid> boids::GetBoids()
 {
 	return _boids;
@@ -23,7 +28,27 @@ void boids::Tick()
 		for (int y; y < _boids.size(); x++)
 		{
 			if (x == y) continue;
-			
+			glm::vec2 force = { 0,0 };
+			glm::vec2 difference = _boids[y].pos - _boids[x].pos;
+			float distance = difference.length();
+
+			if (distance < AttractRadius)
+			{
+				force += difference * AttractForce;
+			}
+
+			if (distance < RepulseRadius)
+			{
+				force -= difference * RepulseForce;
+			}
+
+			if (distance < AlignRadius)
+			{
+				force += _boids[y].forward * AlignForce;
+			}
+
+			_boids[x].pos += force;
+			_boids[y].forward = glm::normalize(force);
 		}
 	}
 }

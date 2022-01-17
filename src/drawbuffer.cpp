@@ -25,7 +25,7 @@ void createDrawBuffer3D(DrawBuffer3D& buffer, const CreateDrawBuffer3DParams& pa
         constexpr size_t stride = sizeof(*params.pNormals);
         glVertexAttribPointer(1, size, GL_FLOAT, GL_FALSE, stride, (void*)0);
     }
-    
+
     glBufferData(GL_ARRAY_BUFFER, params.vertexCount * sizeof(*params.pNormals), params.pNormals, GL_STATIC_DRAW);
 
     // Bind colors and upload data
@@ -37,13 +37,20 @@ void createDrawBuffer3D(DrawBuffer3D& buffer, const CreateDrawBuffer3DParams& pa
         glVertexAttribPointer(2, size, GL_FLOAT, GL_FALSE, stride, (void*)0);
     }
     glBufferData(GL_ARRAY_BUFFER, params.vertexCount * sizeof(*params.pColors), params.pColors, GL_STATIC_DRAW);
-    
+
     buffer.vertexCount = params.vertexCount;
 
     // Unbind everything. Potentially illegal on some implementations
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void deleteDrawBuffer3D(DrawBuffer3D& buffer) {
+	glDeleteBuffers(buffer.BufferAttribCount, buffer.vbos);
+	glDeleteVertexArrays(1, &buffer.vao);
+	memset(buffer.vbos, 0, sizeof(buffer.vbos));
+	buffer.vao = 0;
 }
 
 void createDrawBuffer2D(DrawBuffer2D& buffer, const CreateDrawBuffer2DParams& params) {
@@ -78,4 +85,11 @@ void createDrawBuffer2D(DrawBuffer2D& buffer, const CreateDrawBuffer2DParams& pa
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void deleteDrawBuffer2D(DrawBuffer2D& buffer) {
+	glDeleteBuffers(buffer.BufferAttribCount, buffer.vbos);
+	glDeleteVertexArrays(1, &buffer.vao);
+	memset(buffer.vbos, 0, sizeof(buffer.vbos));
+	buffer.vao = 0;
 }

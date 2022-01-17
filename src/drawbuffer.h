@@ -26,6 +26,8 @@ struct CreateDrawBuffer3DParams {
 
 void createDrawBuffer3D(DrawBuffer3D& buffer, const CreateDrawBuffer3DParams& params);
 
+void deleteDrawBuffer3D(DrawBuffer3D& buffer);
+
 struct DrawBuffer2D {
 	enum {
 		BufferAttribVertex = 0,
@@ -44,3 +46,5 @@ struct CreateDrawBuffer2DParams {
 };
 
 void createDrawBuffer2D(DrawBuffer2D& buffer, const CreateDrawBuffer2DParams& params);
+
+void deleteDrawBuffer2D(DrawBuffer2D& buffer);

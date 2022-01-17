@@ -134,7 +134,7 @@ namespace {
             normalBuffer[i * 3 + 1] = normals[indices[i / 6]].y;
             normalBuffer[i * 3 + 2] = normals[indices[i / 6]].z;
         }
-        
+
         glm::vec4 cube_colors[vertexCount];
         for (int iColor = 0; iColor < 6 * 6; ++iColor) {
             cube_colors[iColor].r = (iColor % 3) == 0;
@@ -156,7 +156,7 @@ namespace {
     void onRender3D(const Api3D& api, const RenderParams& params, void* pUserData) {
         const Render3DUserData& userData = *reinterpret_cast<Render3DUserData const*>(pUserData);
         glm::mat4 cubeModelMatrix = glm::translate(glm::identity<glm::mat4>(), userData.cubePosition);
-        drawBuffer3D(eDrawMode::Triangles, api, params, userData.cube, &cubeModelMatrix);
+        //drawBuffer3D(eDrawMode::Triangles, api, params, userData.cube, &cubeModelMatrix);
     }
 
     struct Render2DUserData {
@@ -199,6 +199,9 @@ namespace {
 // Main
 
 int main(int argc, char** argv) {
+
+#pragma region GLFW_INIT
+
     // Initialize glfw library
     if (!glfwInit()) {
         fprintf(stderr, "Failed to init glfw");
@@ -231,6 +234,11 @@ int main(int argc, char** argv) {
     int const DPI = 1;
 # endif
 
+#pragma endregion
+
+
+#pragma region WIN_INIT
+
     int width = 1024, height = 768;
     float widthf = (float)width;
     float heightf = (float)height;
@@ -250,6 +258,9 @@ int main(int argc, char** argv) {
     // Make the window's context current
     glfwMakeContextCurrent(window);
 
+#pragma endregion
+
+
     // Create OpenGL context
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         ERROR("Failed to initialize OpenGL context.");
@@ -257,6 +268,9 @@ int main(int argc, char** argv) {
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
+
+#pragma region IMGUI_INIT
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -272,7 +286,7 @@ int main(int argc, char** argv) {
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
-    
+
     // Init gui structures
     Camera camera = {};
     cameraCreate(camera);
@@ -280,6 +294,11 @@ int main(int argc, char** argv) {
     GUIStates guiStates;
     init_gui_states(guiStates);
     float dummySlider = 0.f;
+
+#pragma endregion
+
+
+#pragma region RENDERER_INIT
 
     RenderEngine renderEngine;
     if (!createRenderEngine(renderEngine)) {
@@ -309,6 +328,8 @@ int main(int argc, char** argv) {
     renderParams.pointSize = 1.f;
     renderParams.lineWidth = 1.f;
 
+#pragma endregion
+
     if (checkOpenGlError()) {
         ERROR("OpenGL Error before launching main loop");
     }
@@ -320,6 +341,8 @@ int main(int argc, char** argv) {
         // Poll for and process events
         glfwPollEvents();
 
+#pragma region INPUTS
+
         // Mouse states
         int leftButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         int rightButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
@@ -327,19 +350,22 @@ int main(int argc, char** argv) {
 
         if (leftButton == GLFW_PRESS) {
             guiStates.turnLock = true;
-        } else {
+        }
+        else {
             guiStates.turnLock = false;
         }
 
         if (rightButton == GLFW_PRESS) {
             guiStates.zoomLock = true;
-        } else {
+        }
+        else {
             guiStates.zoomLock = false;
         }
 
         if (middleButton == GLFW_PRESS) {
             guiStates.panLock = true;
-        } else {
+        }
+        else {
             guiStates.panLock = false;
         }
 
@@ -369,17 +395,21 @@ int main(int argc, char** argv) {
                     zoomDir = 1.f;
                 }
                 cameraZoom(camera, zoomDir * GUIStates::MOUSE_ZOOM_SPEED);
-            } else if (guiStates.turnLock) {
+            }
+            else if (guiStates.turnLock) {
                 cameraTurn(camera, diffLockPositionY * GUIStates::MOUSE_TURN_SPEED,
                     diffLockPositionX * GUIStates::MOUSE_TURN_SPEED);
 
-            } else if (guiStates.panLock) {
+            }
+            else if (guiStates.panLock) {
                 cameraPan(camera, diffLockPositionX * GUIStates::MOUSE_PAN_SPEED,
                     diffLockPositionY * GUIStates::MOUSE_PAN_SPEED);
             }
             guiStates.lockPositionX = mousex;
             guiStates.lockPositionY = mousey;
         }
+
+#pragma endregion
 
         glfwGetFramebufferSize(window, &renderParams.viewportWidth, &renderParams.viewportHeight);
 

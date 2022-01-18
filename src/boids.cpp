@@ -71,7 +71,7 @@ void boids::Tick(float deltaTime)
 
 		glm::vec2 attractionForce = { 0,0 };
 		glm::vec2 attractionPosition = { 0,0 };
-		int attractionCount = 0;
+		int neighbour = 0;
 
 		glm::vec2 repulseForce = { 0,0 };
 		int repulseCount = 0;
@@ -102,7 +102,7 @@ void boids::Tick(float deltaTime)
 			if (distance < AttractRadius)
 			{
 				attractionPosition += boidCompared.pos;
-				attractionCount++;
+				neighbour++;
 			}
 
 			//Calculate repulse radius
@@ -121,15 +121,18 @@ void boids::Tick(float deltaTime)
 		}
 		
 		//Average forces
-		attractionPosition = (attractionCount == 0) ? boidLooked.pos: attractionPosition/(float)attractionCount;
-		attractionForce = (attractionPosition - boidLooked.pos);
+		attractionPosition = (neighbour == 0) ? boidLooked.pos: attractionPosition/(float)neighbour;
+		attractionForce = (attractionPosition - boidLooked.pos) * AttractForce;
+
+		repulseForce *= RepulseForce;
 
 		alignementVelocity /= (alignmentCount == 0) ? 1 : alignmentCount;
-		alignementVelocity -= boidLooked.velocity;
 
 		//Sum forces
-		_boids[x].force = attractionForce * AttractForce + (repulseForce/(float)repulseCount) * RepulseForce + alignementVelocity * AlignForce;
+		_boids[x].force = attractionForce + repulseForce * RepulseForce + alignementVelocity * AlignForce;
 	}
+
+	UpdatePosition(deltaTime);
 }
 
 void boids::UpdatePosition(float deltaTime)
@@ -137,7 +140,7 @@ void boids::UpdatePosition(float deltaTime)
 	for (int x = 0; x < _boids.size(); x++)
 	{
 		//Calculate velocity
-		_boids[x].velocity = _boids[x].force;
+		_boids[x].velocity = _boids[x].force * deltaTime + _boids[x].velocity;
 
 		//Clamp speed
 		float speed = glm::length(_boids[x].velocity);
@@ -175,8 +178,8 @@ void boids::AddBoids(unsigned int amount)
 	for (int i = 0; i < amount; i++)
 	{
 		_boids.push_back({
-					glm::vec2{RandomNormalize(),RandomNormalize()},
-					glm::vec2{RandomNormalize(),RandomNormalize()},
+					glm::vec2{RandomNormalize() *2 -1,RandomNormalize() * 2 - 1},
+					glm::vec2{RandomNormalize() * 2 - 1,RandomNormalize() * 2 - 1},
 					glm::vec2{0, 0},
 					glm::vec4{RandomZeroOrOne(), RandomZeroOrOne(), RandomZeroOrOne(), 1}
 			});

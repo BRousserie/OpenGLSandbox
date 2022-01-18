@@ -456,13 +456,7 @@ int main(int argc, char** argv) {
 			ImGui::SliderFloat("Repulsion Radius", &theBoids.RepulseRadius, 0.f, 2.f);
 			ImGui::SliderFloat("Alignment Force", &theBoids.AlignForce, 0.f, 2.f);
 			ImGui::SliderFloat("Alignment Radius", &theBoids.AlignRadius, 0.f, 2.f);
-
-			float fovDegrees = glm::degrees(camera.fov);
-			if (ImGui::SliderFloat("Camera field of fiew (degrees)", &fovDegrees, 15, 180)) {
-				camera.fov = glm::radians(fovDegrees);
-			}
-
-			ImGui::SliderFloat3("Cube Position", (float(&)[3])render3DUserData.cubePosition, -10.f, 10.f);
+			ImGui::SliderInt("Boids Count", &theBoids.TargetBoidsNumber, 2, 250);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();

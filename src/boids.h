@@ -13,7 +13,7 @@ public:
 		glm::vec2 velocity;
 	};
 
-	boids(float _AttractForce = 0.25f, float _AttractRadius = 1.f, float _RepulseForce = 1.f, float _RepulseRadius = 0.1f, float _AligneForce = 0.3f, float _AlignRadius = 0.25f, int BoidsNumber = 25);
+	boids(float _AttractForce = 0.25f, float _AttractRadius = 1.f, float _RepulseForce = 1.f, float _RepulseRadius = 0.1f, float _AligneForce = 0.3f, float _AlignRadius = 0.25f, int _BoidsNumber = 25);
 	~boids();
 
 	boids(const boids& ) = delete;
@@ -32,5 +32,4 @@ public:
 	float AlignForce;
 	float AlignRadius;
 	int TargetBoidsNumber;
-	int BoidsNumber;
 };

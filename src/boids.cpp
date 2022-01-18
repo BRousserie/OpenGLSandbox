@@ -24,10 +24,10 @@ float lerp(float a, float b, float t)
 	return a + t * (b - a);
 }
 
-boids::boids(float _AttractForce, float _AttractRadius, float _RepulseForce, float _RepulseRadius, float _AligneForce, float _AlignRadius)
-	: AttractForce(_AttractForce), AttractRadius(_AttractRadius), RepulseForce(_RepulseForce), RepulseRadius(_RepulseRadius), AlignForce(_AligneForce), AlignRadius(_AlignRadius)
+boids::boids(float _AttractForce, float _AttractRadius, float _RepulseForce, float _RepulseRadius, float _AligneForce, float _AlignRadius, int _BoidsNumber)
+	: AttractForce(_AttractForce), AttractRadius(_AttractRadius), RepulseForce(_RepulseForce), RepulseRadius(_RepulseRadius), AlignForce(_AligneForce), AlignRadius(_AlignRadius), TargetBoidsNumber(_BoidsNumber)
 {
-	AddBoids(25);
+	AddBoids(_BoidsNumber);
 }
 
 boids::~boids()
@@ -42,16 +42,29 @@ std::vector<boids::boid> boids::GetBoids()
 
 void boids::Tick(float deltaTime)
 {
+	int BoidsChange = TargetBoidsNumber - int(_boids.size());
+	if (BoidsChange != 0)
+	{
+		if (BoidsChange < 0)
+		{
+			RemoveBoids(-BoidsChange);
+		}
+		else
+		{
+			AddBoids(BoidsChange);
+		}
+	}
+
 	for (int x = 0; x < _boids.size(); x++)
 	{
 
 		boid boidLooked = { _boids[x].pos, _boids[x].velocity };
-
+						 
 		for (int y = 0; y < _boids.size(); y++)
-		{
+		{				 
 			if (x == y) continue;
 			glm::vec2 force = { 0,0 };
-
+						 
 			boid boidCompared = { _boids[y].pos, _boids[y].velocity };
  
 			if (abs(boidCompared.pos.x - boidLooked.pos.x) > 1)

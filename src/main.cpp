@@ -33,18 +33,6 @@ particlesystem particleSystem;
 
 namespace {
 
-	float RandomZeroOrOne()
-	{
-		std::mt19937_64 rng;
-		// initialize the random number generator with time-dependent seed
-		uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
-		rng.seed(ss);
-		// initialize a uniform distribution between 0 and 1
-		std::uniform_int_distribution<> distrib(0, 1);
-		return distrib(rng);
-	}
-
 
 	bool checkOpenGlError() {
 		int error;
@@ -188,19 +176,15 @@ namespace {
 
 	void createRender2DUserData(Render2DUserData& userData) {
 		std::vector<glm::vec2> vertices;
-
+		std::vector<glm::vec4> colors;
 		for (const auto& boid : theBoids.GetBoids())
 		{
 			vertices.push_back(boid.pos);
-		}
-
-		std::vector<glm::vec4> square_colors;
-		for (int iColor = 0; iColor < vertices.size(); ++iColor) {
-			square_colors.push_back({ iColor % 2 ,iColor % 3,iColor % 4,1 });
+			colors.push_back(boid.color);
 		}
 
 		CreateDrawBuffer2DParams params;
-		params.pColors = square_colors.data();
+		params.pColors = colors.data();
 		params.pVertices = vertices.data();
 		params.vertexCount = vertices.size();
 		createDrawBuffer2D(userData.square, params);

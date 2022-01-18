@@ -11,9 +11,11 @@ public:
 	{
 		glm::vec2 pos;
 		glm::vec2 velocity;
+		glm::vec2 force;
+		glm::vec4 color;
 	};
 
-	boids(float _AttractForce = 0.25f, float _AttractRadius = 1.f, float _RepulseForce = 1.f, float _RepulseRadius = 0.1f, float _AligneForce = 0.3f, float _AlignRadius = 0.25f, int _BoidsNumber = 25);
+	boids(float _AttractForce = 0.f, float _AttractRadius = 0.f, float _RepulseForce = 0.f, float _RepulseRadius = 0.f, float _AligneForce = 0.f, float _AlignRadius = 0.f, int _BoidsNumber = 0);
 	~boids();
 
 	boids(const boids& ) = delete;
@@ -23,6 +25,7 @@ public:
 	void Tick(float deltaTime);
 	void AddBoids(unsigned int amount);
 	void RemoveBoids(unsigned int amount);
+	void UpdatePosition(float deltaTime);
 
 	std::vector<boid> _boids;
 	float AttractForce;

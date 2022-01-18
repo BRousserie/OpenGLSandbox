@@ -13,14 +13,14 @@ public:
 		glm::vec2 forward;
 	};
 
-	boids(float _AttractForce = 10, float _AttractRadius = 20, float _RepulseForce = 15, float _RepulseRadius = 3, float _AligneForce = 5, float _AlignRadius = 7);
+	boids(float _AttractForce = 0.1f, float _AttractRadius = 2.f, float _RepulseForce = 0.15f, float _RepulseRadius = 0.5f, float _AligneForce = 0.5f, float _AlignRadius = 0.7f);
 	~boids();
 
-	boids(const& boids) = delete;
+	boids(const boids& ) = delete;
 	boids& operator=(boids) = delete;
 
 	std::vector<boid> GetBoids();
-	void Tick();
+	void Tick(float deltaTime);
 	void AddBoids(unsigned int amount);
 	void RemoveBoids(unsigned int amount);
 

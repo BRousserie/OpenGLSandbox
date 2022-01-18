@@ -434,7 +434,12 @@ int main(int argc, char** argv) {
 
 			ImGui::ColorEdit4("Background color", (float*)&renderParams.backgroundColor, ImGuiColorEditFlags_NoInputs);
 			ImGui::SliderFloat("Point size", &renderParams.pointSize, 0.1f, 10.f);
-			ImGui::SliderFloat("Line Width", &renderParams.lineWidth, 0.1f, 10.f);
+			ImGui::SliderFloat("Attraction Force", &theBoids.AttractForce, 0.f, 2.f);
+			ImGui::SliderFloat("Attraction Radius", &theBoids.AttractRadius, 0.f, 2.f);
+			ImGui::SliderFloat("Repulsion Force", &theBoids.RepulseForce, 0.f, 2.f);
+			ImGui::SliderFloat("Repulsion Radius", &theBoids.RepulseRadius, 0.f, 2.f);
+			ImGui::SliderFloat("Alignment Force", &theBoids.AlignForce, 0.f, 2.f);
+			ImGui::SliderFloat("Alignment Radius", &theBoids.AlignRadius, 0.f, 2.f);
 
 			float fovDegrees = glm::degrees(camera.fov);
 			if (ImGui::SliderFloat("Camera field of fiew (degrees)", &fovDegrees, 15, 180)) {

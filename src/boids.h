@@ -13,7 +13,7 @@ public:
 		glm::vec2 forward;
 	};
 
-	boids(float _AttractForce = 0.1f, float _AttractRadius = 2.f, float _RepulseForce = 0.15f, float _RepulseRadius = 0.5f, float _AligneForce = 0.5f, float _AlignRadius = 0.7f);
+	boids(float _AttractForce = 0.1f, float _AttractRadius = 2.f, float _RepulseForce = 0.15f, float _RepulseRadius = 0.5f, float _AligneForce = 0.5f, float _AlignRadius = 0.7f, int BoidsNumber = 25);
 	~boids();
 
 	boids(const boids& ) = delete;
@@ -24,7 +24,6 @@ public:
 	void AddBoids(unsigned int amount);
 	void RemoveBoids(unsigned int amount);
 
-private:
 	std::vector<boid> _boids;
 	float AttractForce;
 	float AttractRadius;
@@ -32,4 +31,6 @@ private:
 	float RepulseRadius;
 	float AlignForce;
 	float AlignRadius;
+	int TargetBoidsNumber;
+	int BoidsNumber;
 };

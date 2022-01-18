@@ -32,4 +32,5 @@ private:
 	float RepulseRadius;
 	float AlignForce;
 	float AlignRadius;
+	float SpeedMax = 1;
 };

@@ -69,22 +69,32 @@ void boids::Tick(float deltaTime)
 
 			if (distance < AttractRadius)
 			{
-				force += difference * AttractForce * powf(distance/AttractRadius,1);
+				force += difference * AttractForce * distance/AttractRadius;
 			}
 
 			if (distance < RepulseRadius)
 			{
-				force -= difference * RepulseForce * powf((1-distance)/RepulseRadius,1);
+				if (distance == 0)
+				{
+					force -= glm::normalize(boidCompared.velocity) * RepulseForce * (1 - distance) / RepulseRadius;
+				}
+				force -= difference * RepulseForce * (1-distance)/RepulseRadius;
 			}
 
 			if (distance < AlignRadius)
 			{
-				force += glm::normalize(_boids[y].velocity) * AlignForce * powf((1 - distance)/AlignRadius,1);
+				force += glm::normalize(_boids[y].velocity) * AlignForce * (1 - distance)/AlignRadius;
 			}
 
 			float friction = 0.04f;
 
 			_boids[x].velocity = force * deltaTime + _boids[x].velocity * (1-friction);
+
+			float speed = glm::length(_boids[x].velocity);
+			if (speed > SpeedMax)
+			{
+				_boids[x].velocity / (speed / SpeedMax);
+			}
 
 			_boids[x].pos += _boids[x].velocity * deltaTime;
 

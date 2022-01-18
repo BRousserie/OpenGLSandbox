@@ -38,7 +38,7 @@ namespace {
 		std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
 		rng.seed(ss);
 		// initialize a uniform distribution between 0 and 1
-		std::uniform_int_distribution<> distrib(0,1);
+		std::uniform_int_distribution<> distrib(0, 1);
 		return distrib(rng);
 	}
 
@@ -193,7 +193,7 @@ namespace {
 
 		std::vector<glm::vec4> square_colors;
 		for (int iColor = 0; iColor < vertices.size(); ++iColor) {
-			square_colors.push_back({ iColor%2 ,iColor%3,iColor%4,1 });
+			square_colors.push_back({ iColor % 2 ,iColor % 3,iColor % 4,1 });
 		}
 
 		CreateDrawBuffer2DParams params;

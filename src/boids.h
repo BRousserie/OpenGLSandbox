@@ -10,10 +10,10 @@ public:
 	struct boid
 	{
 		glm::vec2 pos;
-		glm::vec2 forward;
+		glm::vec2 velocity;
 	};
 
-	boids(float _AttractForce = 0.1f, float _AttractRadius = 2.f, float _RepulseForce = 0.15f, float _RepulseRadius = 0.5f, float _AligneForce = 0.5f, float _AlignRadius = 0.7f);
+	boids(float _AttractForce = 0.25f, float _AttractRadius = 1.f, float _RepulseForce = 1.f, float _RepulseRadius = 0.1f, float _AligneForce = 0.3f, float _AlignRadius = 0.25f);
 	~boids();
 
 	boids(const boids& ) = delete;

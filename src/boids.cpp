@@ -19,10 +19,15 @@ float RandomNormalize()
 	return unif(rng);
 }
 
+float lerp(float a, float b, float t)
+{
+	return a + t * (b - a);
+}
+
 boids::boids(float _AttractForce, float _AttractRadius, float _RepulseForce, float _RepulseRadius, float _AligneForce, float _AlignRadius)
 	: AttractForce(_AttractForce), AttractRadius(_AttractRadius), RepulseForce(_RepulseForce), RepulseRadius(_RepulseRadius), AlignForce(_AligneForce), AlignRadius(_AlignRadius)
 {
-	AddBoids(5);
+	AddBoids(25);
 }
 
 boids::~boids()
@@ -40,14 +45,14 @@ void boids::Tick(float deltaTime)
 	for (int x = 0; x < _boids.size(); x++)
 	{
 
-		boid boidLooked = { _boids[x].pos, _boids[x].forward };
+		boid boidLooked = { _boids[x].pos, _boids[x].velocity };
 
 		for (int y = 0; y < _boids.size(); y++)
 		{
 			if (x == y) continue;
 			glm::vec2 force = { 0,0 };
 
-			boid boidCompared = { _boids[y].pos, _boids[y].forward };
+			boid boidCompared = { _boids[y].pos, _boids[y].velocity };
  
 			if (abs(boidCompared.pos.x - boidLooked.pos.x) > 1)
 			{
@@ -61,25 +66,27 @@ void boids::Tick(float deltaTime)
 
 			glm::vec2 difference = boidCompared.pos - boidLooked.pos;
 			float distance = sqrtf(difference.x * difference.x + difference.y * difference.y);
-			
-
 
 			if (distance < AttractRadius)
 			{
-				force += difference * AttractForce;
+				force += difference * AttractForce * powf(distance/AttractRadius,1);
 			}
 
 			if (distance < RepulseRadius)
 			{
-				force -= difference * RepulseForce;
+				force -= difference * RepulseForce * powf((1-distance)/RepulseRadius,1);
 			}
 
 			if (distance < AlignRadius)
 			{
-				force += _boids[y].forward * AlignForce;
+				force += glm::normalize(_boids[y].velocity) * AlignForce * powf((1 - distance)/AlignRadius,1);
 			}
 
-			_boids[x].pos += force * deltaTime;
+			float friction = 0.04f;
+
+			_boids[x].velocity = force * deltaTime + _boids[x].velocity * (1-friction);
+
+			_boids[x].pos += _boids[x].velocity * deltaTime;
 
 			if (_boids[x].pos.x > 1)
 			{
@@ -98,13 +105,6 @@ void boids::Tick(float deltaTime)
 			{
 				_boids[x].pos.y += 2;
 			}
-
-			glm::vec2 newForward = glm::normalize(force);
-
-			if (!isnan(newForward.x))
-			{
-				_boids[y].forward = newForward;
-			}
 		}
 	}
 }
@@ -115,7 +115,7 @@ void boids::AddBoids(unsigned int amount)
 	{
 		_boids.push_back({
 					{RandomNormalize(),RandomNormalize()},
-					glm::normalize(glm::vec2{RandomNormalize(),RandomNormalize()})
+					{RandomNormalize(),RandomNormalize()}
 			});
 	}
 }

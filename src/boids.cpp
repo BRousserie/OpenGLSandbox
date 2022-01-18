@@ -143,6 +143,11 @@ void boids::AddBoids(unsigned int amount)
 	}
 }
 
+void boids::AddBoids(glm::vec2 pos)
+{
+	_boids.push_back({ pos, { RandomNormalize(), RandomNormalize() } });
+}
+
 void boids::RemoveBoids(unsigned int amount)
 {
 	for (int i = 0; i < amount; i++)

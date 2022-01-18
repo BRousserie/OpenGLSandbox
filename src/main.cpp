@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "boids.h"
+#include "particlesystem.h"
 #include "shader.h"
 #include "drawbuffer.h"
 #include "renderengine.h"
@@ -27,6 +28,8 @@
 #define COUNTOF(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
 
 boids theBoids;
+boids particles;
+particlesystem particleSystem;
 
 namespace {
 
@@ -359,7 +362,7 @@ int main(int argc, char** argv) {
 		glfwPollEvents();
 
 		theBoids.Tick(deltatime);
-
+		particleSystem.Tick(deltatime, particles);
 #pragma region INPUTS
 
 		// Mouse states
@@ -428,6 +431,17 @@ int main(int argc, char** argv) {
 			guiStates.lockPositionY = mousey;
 		}
 
+		glm::vec2 mousepos = { (mousex / width) * 2 - 1, (mousey / height) * 2 - 1 };
+
+		if (leftButton)
+		{
+			particleSystem.AddSystem(mousepos);
+		}
+
+		if (rightButton)
+		{
+			particles.AddBoids(mousepos);
+		}
 #pragma endregion
 
 		glfwGetFramebufferSize(window, &renderParams.viewportWidth, &renderParams.viewportHeight);
@@ -457,6 +471,8 @@ int main(int argc, char** argv) {
 			ImGui::SliderFloat("Alignment Force", &theBoids.AlignForce, 0.f, 2.f);
 			ImGui::SliderFloat("Alignment Radius", &theBoids.AlignRadius, 0.f, 2.f);
 			ImGui::SliderInt("Boids Count", &theBoids.TargetBoidsNumber, 2, 250);
+			ImGui::SliderFloat("Particles Force", &particleSystem.Force, -10.f, 10.f);
+			ImGui::SliderFloat("Particles Angle", &particleSystem.Angle, 0.f, 360.f);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();

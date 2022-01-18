@@ -22,6 +22,7 @@ public:
 	std::vector<boid> GetBoids();
 	void Tick(float deltaTime);
 	void AddBoids(unsigned int amount);
+	void AddBoids(glm::vec2 pos);
 	void RemoveBoids(unsigned int amount);
 
 	std::vector<boid> _boids;

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "boids.h"
+#include "object.h"
 #include "particlesystem.h"
 #include "shader.h"
 #include "drawbuffer.h"
@@ -171,28 +172,32 @@ namespace {
 	}
 
 	struct Render2DUserData {
-		DrawBuffer2D square;
+		DrawBuffer2D boids;
+		DrawBuffer2D particles;
+		DrawBuffer2D systems;
 	};
 
-	void createRender2DUserData(Render2DUserData& userData) {
+	void createRender2DUserData(DrawBuffer2D& buffer, std::vector<object*> objects) {
 		std::vector<glm::vec2> vertices;
 		std::vector<glm::vec4> colors;
-		for (const auto& boid : theBoids.GetBoids())
+		for (const object* obj : objects)
 		{
-			vertices.push_back(boid.pos);
-			colors.push_back(boid.color);
+			vertices.push_back(obj->pos);
+			colors.push_back(obj->color);
 		}
 
 		CreateDrawBuffer2DParams params;
 		params.pColors = colors.data();
 		params.pVertices = vertices.data();
 		params.vertexCount = vertices.size();
-		createDrawBuffer2D(userData.square, params);
+		createDrawBuffer2D(buffer, params);
 	}
 
 	void onRender2D(const Api2D& api, const RenderParams& params, void* pUserData) {
 		const Render2DUserData& userData = *reinterpret_cast<Render2DUserData const*>(pUserData);
-		drawBuffer2D(eDrawMode::Points, api, userData.square);
+		drawBuffer2D(eDrawMode::Points, api, userData.boids);
+		drawBuffer2D(eDrawMode::Points, api, userData.particles);
+		drawBuffer2D(eDrawMode::Points, api, userData.systems);
 	}
 }
 
@@ -326,8 +331,8 @@ int main(int argc, char** argv) {
 	renderParams.backgroundColor.b = 0.f;
 	renderParams.backgroundColor.a = 1.f;
 
-	renderParams.pointSize = 5.f;
 	renderParams.lineWidth = 1.f;
+	renderParams.pointSize = 5.f;
 
 #pragma endregion
 
@@ -347,6 +352,9 @@ int main(int argc, char** argv) {
 
 		theBoids.Tick(deltatime);
 		particleSystem.Tick(deltatime, particles);
+		theBoids.UpdatePosition(deltatime);
+
+
 #pragma region INPUTS
 
 		// Mouse states
@@ -424,14 +432,22 @@ int main(int argc, char** argv) {
 
 		if (rightButton)
 		{
-			particles.AddBoids(mousepos);
+			particles.AddBoidAt(mousepos);
 		}
 #pragma endregion
 
 		glfwGetFramebufferSize(window, &renderParams.viewportWidth, &renderParams.viewportHeight);
-		createRender2DUserData(render2DUserData);
+
+
+		createRender2DUserData(render2DUserData.boids, theBoids.GetBoidsPtr());
+		createRender2DUserData(render2DUserData.particles, particles.GetBoidsPtr());
+		createRender2DUserData(render2DUserData.systems, particleSystem.GetSystemsPtr());
 		render(renderEngine, renderParams);
-		deleteDrawBuffer2D(render2DUserData.square);
+		deleteDrawBuffer2D(render2DUserData.boids);
+		deleteDrawBuffer2D(render2DUserData.particles);
+		deleteDrawBuffer2D(render2DUserData.systems);
+
+
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -456,6 +472,7 @@ int main(int argc, char** argv) {
 			ImGui::SliderFloat("Alignment Radius", &theBoids.AlignRadius, 0.f, 2.f);
 			ImGui::SliderInt("Boids Count", &theBoids.TargetBoidsNumber, 2, 250);
 			ImGui::SliderFloat("Particles Force", &particleSystem.Force, -10.f, 10.f);
+			ImGui::SliderFloat("Particles Radius", &particleSystem.Radius, 0.f, 2.f);
 			ImGui::SliderFloat("Particles Angle", &particleSystem.Angle, 0.f, 360.f);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

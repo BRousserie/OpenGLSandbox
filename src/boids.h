@@ -2,17 +2,27 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include "object.h"
 
 class boids 
 {
 public:
 
-	struct boid
+	struct boid : public object
 	{
-		glm::vec2 pos;
+		boid (glm::vec2 _pos, glm::vec4 _color, glm::vec2 _velocity, glm::vec2 _force)
+			: object({ _pos, _color }), velocity(_velocity), force(_force) {}
+
+		boid(const boid& other)
+		{
+			pos = other.pos;
+			color = other.color;
+			velocity = other.velocity;
+			force = other.force;
+		}
+
 		glm::vec2 velocity;
 		glm::vec2 force;
-		glm::vec4 color;
 	};
 
 	boids(float _AttractForce = 0.f, float _AttractRadius = 0.f, float _RepulseForce = 0.f, float _RepulseRadius = 0.f, float _AligneForce = 0.f, float _AlignRadius = 0.f, int _BoidsNumber = 0);
@@ -22,13 +32,15 @@ public:
 	boids& operator=(boids) = delete;
 
 	std::vector<boid> GetBoids();
+	std::vector<object*> GetBoidsPtr();
 	void Tick(float deltaTime);
 	void AddBoids(unsigned int amount);
-	void AddBoids(glm::vec2 pos);
+	void AddBoidAt(glm::vec2 pos);
 	void RemoveBoids(unsigned int amount);
 	void UpdatePosition(float deltaTime);
 
 	std::vector<boid> _boids;
+	std::vector<object*> _boids_ptr;
 	float AttractForce;
 	float AttractRadius;
 	float RepulseForce;

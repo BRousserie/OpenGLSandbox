@@ -3,13 +3,16 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <cmath>
+#include "boids.h"
+#include "object.h"
 
 class particlesystem
 {
 public:
-	struct system
+	struct system : public object
 	{
-		glm::vec2 pos;
+		system(glm::vec2 _pos, glm::vec4 _color)
+			: object({ _pos, _color }) {}
 	};
 
 
@@ -20,10 +23,12 @@ public:
 	~particlesystem();
 
 	std::vector<system> GetSystems();
+	std::vector<object*> GetSystemsPtr();
 	void Tick(float deltaTime, boids& _boids);
 	void AddSystem(glm::vec2 pos);
 
 	std::vector<system> _systems;
+	std::vector<object*> _systems_ptr;
 	float Force = 1.f;
 	float Radius = 2.f;
 	float Angle = 0.f;

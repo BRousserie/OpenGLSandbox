@@ -47,6 +47,11 @@ std::vector<boids::boid> boids::GetBoids()
 	return _boids;
 }
 
+std::vector<object*> boids::GetBoidsPtr()
+{
+	return _boids_ptr;
+}
+
 void boids::Tick(float deltaTime)
 {
 	//Update boids count
@@ -67,7 +72,7 @@ void boids::Tick(float deltaTime)
 	//Calculate forces
 	for (int x = 0; x < _boids.size(); x++)
 	{
-		boid boidLooked = { _boids[x].pos, _boids[x].velocity };
+		boid boidLooked = _boids[x];
 
 		glm::vec2 attractionForce = { 0,0 };
 		glm::vec2 attractionPosition = { 0,0 };
@@ -83,7 +88,7 @@ void boids::Tick(float deltaTime)
 		{
 			if (x == y) continue;
 
-			boid boidCompared = { _boids[y].pos, _boids[y].velocity };
+			boid boidCompared = _boids[y];
 
 			//Calculate distance with wrap screen
 			if (abs(boidCompared.pos.x - boidLooked.pos.x) > 1)
@@ -174,18 +179,22 @@ void boids::AddBoids(unsigned int amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
-		_boids.push_back({
+		_boids.push_back(
+			{
 					glm::vec2{RandomNormalize(),RandomNormalize()},
+					glm::vec4{RandomZeroOrOne(), RandomZeroOrOne(), RandomZeroOrOne(), 1},
 					glm::vec2{RandomNormalize(),RandomNormalize()},
-					glm::vec2{0, 0},
-					glm::vec4{RandomZeroOrOne(), RandomZeroOrOne(), RandomZeroOrOne(), 1}
+					glm::vec2{0, 0}
 			});
+		_boids_ptr.push_back(&_boids.back());
 	}
 }
 
-void boids::AddBoids(glm::vec2 pos)
+void boids::AddBoidAt(glm::vec2 pos)
 {
-	_boids.push_back({ pos, { RandomNormalize(), RandomNormalize() } });
+	_boids.push_back({ pos, { 1, 0, 0, 1}, { RandomNormalize(), RandomNormalize() }, { 0, 0 } });
+	_boids_ptr.push_back(&_boids.back());
+
 }
 
 void boids::RemoveBoids(unsigned int amount)
@@ -194,6 +203,7 @@ void boids::RemoveBoids(unsigned int amount)
 	{
 		if (_boids.size() == 0) return;
 		_boids.pop_back();
+		_boids_ptr.pop_back();
 	}
 }
 

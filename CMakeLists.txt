@@ -65,7 +65,7 @@ set(SHADER_FILES
 	src/shaders/shader_2d.vert
 )
 
-add_executable (${PROJECT_NAME} ${SOURCE_FILES} "src/boids.cpp" "src/boids.h" "src/particlesystem.cpp" "src/particlesystem.h")
+add_executable (${PROJECT_NAME} ${SOURCE_FILES} "src/boids.cpp" "src/boids.h" "src/particlesystem.cpp" "src/particlesystem.h" "src/object.h")
 
 foreach( file_i ${SHADER_FILES})
 	file(COPY ${file_i} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

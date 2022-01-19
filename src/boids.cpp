@@ -16,7 +16,7 @@ float RandomNormalize()
 	rng.seed(ss);
 	// initialize a uniform distribution between 0 and 1
 	std::uniform_real_distribution<double> unif(0, 1);
-	return unif(rng);
+	return unif(rng) * 2 - 1;
 }
 
 float RandomZeroOrOne()
@@ -42,7 +42,7 @@ boids::~boids()
 
 }
 
-std::vector<boids::boid> boids::GetBoids()
+std::list<boids::boid>& boids::GetBoids()
 {
 	return _boids;
 }
@@ -68,15 +68,13 @@ void boids::Tick(float deltaTime)
 		}
 	}
 
-
+	int x = 0;
 	//Calculate forces
-	for (int x = 0; x < _boids.size(); x++)
+	for (boid& boidLooked : _boids)
 	{
-		boid boidLooked = _boids[x];
-
 		glm::vec2 attractionForce = { 0,0 };
 		glm::vec2 attractionPosition = { 0,0 };
-		int attractionCount = 0;
+		int neighbour = 0;
 
 		glm::vec2 repulseForce = { 0,0 };
 		int repulseCount = 0;
@@ -84,11 +82,10 @@ void boids::Tick(float deltaTime)
 		glm::vec2 alignementVelocity = { 0,0 };
 		int alignmentCount = 0;
 
-		for (int y = 0; y < _boids.size(); y++)
+		int y = 0;
+		for (boid boidCompared : _boids)
 		{
 			if (x == y) continue;
-
-			boid boidCompared = _boids[y];
 
 			//Calculate distance with wrap screen
 			if (abs(boidCompared.pos.x - boidLooked.pos.x) > 1)
@@ -107,7 +104,7 @@ void boids::Tick(float deltaTime)
 			if (distance < AttractRadius)
 			{
 				attractionPosition += boidCompared.pos;
-				attractionCount++;
+				neighbour++;
 			}
 
 			//Calculate repulse radius
@@ -123,54 +120,60 @@ void boids::Tick(float deltaTime)
 				alignementVelocity += boidCompared.velocity;
 				alignmentCount++;
 			}
+
+			y++;
 		}
 		
 		//Average forces
-		attractionPosition = (attractionCount == 0) ? boidLooked.pos: attractionPosition/(float)attractionCount;
-		attractionForce = (attractionPosition - boidLooked.pos);
+		attractionPosition = (neighbour == 0) ? boidLooked.pos: attractionPosition/(float)neighbour;
+		attractionForce = (attractionPosition - boidLooked.pos) * AttractForce;
+
+		repulseForce *= RepulseForce;
 
 		alignementVelocity /= (alignmentCount == 0) ? 1 : alignmentCount;
-		alignementVelocity -= boidLooked.velocity;
 
 		//Sum forces
-		_boids[x].force = attractionForce * AttractForce + (repulseForce/(float)repulseCount) * RepulseForce + alignementVelocity * AlignForce;
+		boidLooked.force = attractionForce + repulseForce * RepulseForce + alignementVelocity * AlignForce;
+		x++;
 	}
+
+	UpdatePosition(deltaTime);
 }
 
 void boids::UpdatePosition(float deltaTime)
 {
-	for (int x = 0; x < _boids.size(); x++)
+	for (boid& boid : _boids)
 	{
 		//Calculate velocity
-		_boids[x].velocity = _boids[x].force;
+		boid.velocity = boid.force * deltaTime + boid.velocity;
 
 		//Clamp speed
-		float speed = glm::length(_boids[x].velocity);
+		float speed = glm::length(boid.velocity);
 		if (speed > SpeedMax)
 		{
-			_boids[x].velocity /= (speed / SpeedMax);
+			boid.velocity /= (speed / SpeedMax);
 		}
 
 		//Apply velocity
-		_boids[x].pos += _boids[x].velocity * deltaTime;
+		boid.pos += boid.velocity * deltaTime;
 
 		//Wrap screen
-		if (_boids[x].pos.x > 1)
+		if (boid.pos.x > 1)
 		{
-			_boids[x].pos.x -= 2;
+			boid.pos.x -= 2;
 		}
-		if (_boids[x].pos.y > 1)
+		if (boid.pos.y > 1)
 		{
-			_boids[x].pos.y -= 2;
+			boid.pos.y -= 2;
 		}
 
-		if (_boids[x].pos.x < -1)
+		if (boid.pos.x < -1)
 		{
-			_boids[x].pos.x += 2;
+			boid.pos.x += 2;
 		}
-		if (_boids[x].pos.y < -1)
+		if (boid.pos.y < -1)
 		{
-			_boids[x].pos.y += 2;
+			boid.pos.y += 2;
 		}
 	}
 }

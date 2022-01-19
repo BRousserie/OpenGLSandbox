@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <list>
 #include "object.h"
 
 class boids 
@@ -31,7 +32,7 @@ public:
 	boids(const boids& ) = delete;
 	boids& operator=(boids) = delete;
 
-	std::vector<boid> GetBoids();
+	std::list<boid>& GetBoids();
 	std::vector<object*> GetBoidsPtr();
 	void Tick(float deltaTime);
 	void AddBoids(unsigned int amount);
@@ -39,7 +40,7 @@ public:
 	void RemoveBoids(unsigned int amount);
 	void UpdatePosition(float deltaTime);
 
-	std::vector<boid> _boids;
+	std::list<boid> _boids;
 	std::vector<object*> _boids_ptr;
 	float AttractForce;
 	float AttractRadius;

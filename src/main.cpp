@@ -340,6 +340,8 @@ int main(int argc, char** argv) {
 		ERROR("OpenGL Error before launching main loop");
 	}
 
+	int leftButtonState = 0;
+
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(window) && (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)) {
 		double newTime = glfwGetTime();
@@ -353,6 +355,7 @@ int main(int argc, char** argv) {
 		theBoids.Tick(deltatime);
 		particleSystem.Tick(deltatime, particles);
 		theBoids.UpdatePosition(deltatime);
+		particles.UpdatePosition(deltatime);
 
 
 #pragma region INPUTS
@@ -423,14 +426,16 @@ int main(int argc, char** argv) {
 			guiStates.lockPositionY = mousey;
 		}
 
-		glm::vec2 mousepos = { (mousex / width) * 2 - 1, (mousey / height) * 2 - 1 };
+		glfwGetWindowSize(window, &width, &height);
+		glm::vec2 mousepos = { ((float)mousex / width) * 2 - 1, -((float)mousey / height * 2 - 1) };
 
-		if (leftButton)
+		if (leftButton && leftButton != leftButtonState && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 		{
 			particleSystem.AddSystem(mousepos);
 		}
+		leftButtonState = leftButton;
 
-		if (rightButton)
+		if (rightButton && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 		{
 			particles.AddBoidAt(mousepos);
 		}

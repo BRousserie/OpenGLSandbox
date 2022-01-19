@@ -3,6 +3,7 @@
 
 particlesystem::particlesystem()
 {
+	_systems.reserve(100);
 }
 
 particlesystem::~particlesystem()
@@ -23,19 +24,24 @@ void particlesystem::Tick(float deltaTime, boids& _boids)
 {
 	float Rad = Angle * M_PI / 180;
 
-	for (object system : _systems)
+	
+	for (boids::boid& boid : _boids.GetBoids())
 	{
-		for (object boid : _boids.GetBoids())
+		boid.force = { 0,0 };
+		for (const object& system : _systems)
 		{
 			glm::vec2 dir = system.pos - boid.pos;
-			if (dir.length() < Radius)
+			float length = glm::length(dir);
+			dir = glm::normalize(dir);
+			if (length < Radius)
 			{
 				glm::vec2 rotatedVector = 
 				{
-					cos(Rad * dir.x) - sin(Rad * dir.y), 
-					sin(Rad * dir.x) + cos(Rad * dir.y) 
+					cos(Rad) * dir.x - sin(Rad) * dir.y, 
+					sin(Rad) * dir.x + cos(Rad) * dir.y 
 				};
-				boid.pos += rotatedVector * Force * deltaTime;
+				boid.velocity *= 0.99;
+				boid.force += rotatedVector * Force * (Radius - length) / Radius;
 			}
 		}
 	}
@@ -43,6 +49,9 @@ void particlesystem::Tick(float deltaTime, boids& _boids)
 
 void particlesystem::AddSystem(glm::vec2 pos)
 {
-	_systems.push_back({ pos, { 1,0,0,1 } });
-	_systems_ptr.push_back(&_systems.back());
+	if (_systems.size() < 100)
+	{
+		_systems.push_back({ pos, { 1,1,1,1 } });
+		_systems_ptr.push_back(&_systems.back());
+	}
 }
